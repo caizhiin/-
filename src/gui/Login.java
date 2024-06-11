@@ -12,6 +12,7 @@ import gui.teacher.TeaGui;
 
 public class Login extends JFrame{
 
+    public String followid;
     public Login(String name){
         super(name);
         JPanel jp1 = new JPanel();
@@ -49,6 +50,7 @@ public class Login extends JFrame{
                             String id = resultSet.getString("id");
                             String pas = resultSet.getString("pw");
                             if(sno.equals(id)&& pas.equals(passwordStr) ){
+                                followid = id;
                                 flag = false;
                                 int sf = resultSet.getInt("sf");
                                 switch (sf){
@@ -88,5 +90,8 @@ public class Login extends JFrame{
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
+    }
+    public String getId(){
+        return followid;
     }
 }
