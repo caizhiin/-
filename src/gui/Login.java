@@ -54,7 +54,7 @@ public class Login extends JFrame{
                                 flag = false;
                                 int sf = resultSet.getInt("sf");
                                 switch (sf){
-                                    case 1: AdminGui adminFrame = new AdminGui();
+                                    case 1: AdminGui adminFrame = new AdminGui(Login.this.getId());
                                         adminFrame.setVisible(true);  dispose();break;
 
                                     case 2: StuGui stuFrame = new StuGui();
