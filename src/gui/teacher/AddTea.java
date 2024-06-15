@@ -102,6 +102,11 @@ public class AddTea extends JFrame {
                     st.setString(3, tsex);
                     st.setInt(4, sage);
                     st.setString(5, clas);
+                    String strSQL1 = "INSERT INTO login (id, pw ,sf) VALUES (? ,? ,? )";
+                    PreparedStatement st1 = dbConn.prepareStatement(strSQL1);
+                    st1.setString(1, tno);
+                    st1.setString(2, "123");
+                    st1.setInt(3,3);
                     System.out.println("连接数据库成功");
                     int rowsAffected = st.executeUpdate();
                     if (rowsAffected > 0) {

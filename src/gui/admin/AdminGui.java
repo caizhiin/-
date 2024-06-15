@@ -197,6 +197,7 @@ public class AdminGui extends JFrame {
 
                 } catch (Exception ee) {
                     ee.printStackTrace();
+                    JOptionPane.showMessageDialog(AdminGui.this, "数据不合规");
                     System.out.print("连接失败");
                 }
             });
@@ -424,6 +425,7 @@ public class AdminGui extends JFrame {
 
                 } catch (Exception ee) {
                     ee.printStackTrace();
+                    JOptionPane.showMessageDialog(AdminGui.this, "数据不合规");
                     System.out.print("连接失败");
                 }
             });
@@ -589,12 +591,165 @@ public class AdminGui extends JFrame {
 
                 } catch (Exception ee) {
                     ee.printStackTrace();
+                    JOptionPane.showMessageDialog(AdminGui.this, "数据不合规");
                     System.out.print("连接失败");
                 }
             });
 
 
             //jp5管理员授权面板实现
+            JButton jb51 = new JButton("搜索");
+            JButton jb52 = new JButton("提交修改");
+            JButton jb53 = new JButton("刷新");
+
+           JTextField jt51 = new JTextField(10);
+            JPanel jp51 = new JPanel();
+            jp51.add(jt51);
+            jp51.add(jb51);
+            jp51.add(jb52);
+            jp51.add(jb53);
+
+            String[][] datas4 = {};
+            String[] titles4 = { "账号", "身份"};
+            DefaultTableModel myModel4 = new DefaultTableModel(datas4, titles4);// myModel存放表格的数据
+            JTable table4 = new JTable(myModel4);// 表格对象table的数据来源是myModel对象
+            table4.setRowHeight(20);// 行高
+            table4.preferredSize();
+            TableColumnModel columnModel4 = table4.getColumnModel();
+            // 假设我们要设置第一列的宽度为150像素
+            columnModel4.getColumn(0).setPreferredWidth(100);
+            // 也可以设置第二列的宽度
+            columnModel4.getColumn(1).setPreferredWidth(100);
+            table4.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            try {
+                String URL = "jdbc:sqlserver://localhost:1433;databaseName=Final_Disign";
+                String user = "u1";
+                String password = "123";
+                Connection dbConn = DriverManager.getConnection(URL, user, password);
+                Statement st = dbConn.createStatement();
+                System.out.println("连接数据库成功");
+                String strSQL = "select * from dbo.login";
+                ResultSet rs = st.executeQuery(strSQL);
+                if (myModel4.getRowCount() != 0) {
+                    int num = myModel4.getRowCount();
+                    for (int i = num - 1; i >= 0; i--) {
+                        myModel4.removeRow(i);
+                    }
+                }
+                while (rs.next()) {
+                    Vector<String> ve = new Vector<String>();
+                    ve.addElement(rs.getString(1));
+                    ve.addElement(rs.getString(3));
+                    myModel4.addRow(ve); // 添加一行到模型结尾
+                }
+                dbConn.close();
+
+            } catch (Exception ee) {
+                ee.printStackTrace();
+                System.out.print("连接失败");
+            }
+            table4.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+            BoxLayout layout5 = new BoxLayout(jp5, BoxLayout.Y_AXIS);
+            jp5.setLayout(layout5);
+            jp5.add(jp51);
+            jp5.add(new JScrollPane(table4));
+
+
+            jb51.addActionListener(e -> {
+                try {
+                    String URL = "jdbc:sqlserver://localhost:1433;databaseName=Final_Disign";
+                    String user = "u1";
+                    String password = "123";
+                    Connection dbConn = DriverManager.getConnection(URL, user, password);
+                    System.out.println("连接数据库成功");
+                    String strSQL = "select * from dbo.login where id = ?";
+                    PreparedStatement st = dbConn.prepareStatement(strSQL);
+                    st.setString(1,jt51.getText());
+                    ResultSet rs = st.executeQuery();
+                    if (myModel4.getRowCount() != 0) {
+                        int num = myModel4.getRowCount();
+                        for (int i = num - 1; i >= 0; i--) {
+                            myModel4.removeRow(i);
+                        }
+                    }
+                    while (rs.next()) {
+                        Vector<String> ve = new Vector<String>();
+                        ve.addElement(rs.getString(1));
+                        ve.addElement(rs.getString(3));
+
+                        myModel4.addRow(ve); // 添加一行到模型结尾
+                    }
+                    dbConn.close();
+
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                    System.out.print("连接失败");
+                }
+            });
+            table4.getSelectionModel().addListSelectionListener(e -> {
+                if (!e.getValueIsAdjusting()) {
+                    selectedRows = table4.getSelectedRows();
+                }
+            });
+            jb52.addActionListener(e -> {
+                try {
+                    String URL = "jdbc:sqlserver://localhost:1433;databaseName=Final_Disign";
+                    String user = "u1";
+                    String password = "123";
+                    Connection dbConn = DriverManager.getConnection(URL, user, password);
+                    String strSQL = "UPDATE login SET id = ?,sf = ? WHERE id = ?";
+                    System.out.println("连接数据库成功");
+                    int rowChangeed = 0;
+                    for (int i = 0; i < selectedRows.length; i++) {
+                        PreparedStatement st = dbConn.prepareStatement(strSQL);
+                        st.setObject(1, myModel4.getValueAt(selectedRows[i],0));
+                        st.setObject(2, myModel4.getValueAt(selectedRows[i],1));
+                        st.setObject(3, myModel4.getValueAt(selectedRows[i],0));
+                        rowChangeed = st.executeUpdate();
+                    }
+                    if (rowChangeed > 0) {
+                        JOptionPane.showMessageDialog(AdminGui.this, "修改成功");
+                    } else {
+                        JOptionPane.showMessageDialog(AdminGui.this, "请选择要修改的行");
+                    }
+
+                    dbConn.close();
+
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                    JOptionPane.showMessageDialog(AdminGui.this, "数据不合规");
+                    System.out.print("连接失败");
+                }
+            });
+            jb53.addActionListener(e -> {
+                try {
+                    String URL = "jdbc:sqlserver://localhost:1433;databaseName=Final_Disign";
+                    String user = "u1";
+                    String password = "123";
+                    Connection dbConn = DriverManager.getConnection(URL, user, password);
+                    Statement st = dbConn.createStatement();
+                    System.out.println("连接数据库成功");
+                    String strSQL = "select * from dbo.login";
+                    ResultSet rs = st.executeQuery(strSQL);
+                    if (myModel4.getRowCount() != 0) {
+                        int num = myModel4.getRowCount();
+                        for (int i = num - 1; i >= 0; i--) {
+                            myModel4.removeRow(i);
+                        }
+                    }
+                    while (rs.next()) {
+                        Vector<String> ve = new Vector<String>();
+                        ve.addElement(rs.getString(1));
+                        ve.addElement(rs.getString(3));
+                        myModel4.addRow(ve); // 添加一行到模型结尾
+                    }
+                    dbConn.close();
+
+                } catch (Exception ee) {
+                    ee.printStackTrace();
+                    System.out.print("连接失败");
+                }
+            });
 
 
 

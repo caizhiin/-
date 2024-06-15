@@ -101,6 +101,11 @@ public class AddStu extends JFrame{
                     st.setString(3, ssex);
                     st.setInt(4, sage);
                     st.setString(5, clas);
+                    String strSQL1 = "INSERT INTO login (id, pw ,sf) VALUES (? ,? ,? )";
+                    PreparedStatement st1 = dbConn.prepareStatement(strSQL1);
+                    st1.setString(1, sno);
+                    st1.setString(2, "123");
+                    st1.setInt(3,2);
                     System.out.println("连接数据库成功");
                     int rowsAffected = st.executeUpdate();
                     if (rowsAffected > 0) {

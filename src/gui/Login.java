@@ -57,11 +57,11 @@ public class Login extends JFrame{
                                     case 1: AdminGui adminFrame = new AdminGui(Login.this.getId());
                                         adminFrame.setVisible(true);  dispose();break;
 
-                                    case 2: StuGui stuFrame = new StuGui();
+                                    case 2: StuGui stuFrame = new StuGui(Login.this.getId());
                                         stuFrame.setVisible(true);  dispose();break;
 
                                     case 3:
-                                        TeaGui teaFrame = new TeaGui();
+                                        TeaGui teaFrame = new TeaGui(Login.this.getId());
                                         teaFrame.setVisible(true); dispose();break;
 
                                 }
