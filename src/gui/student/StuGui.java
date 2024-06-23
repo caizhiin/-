@@ -133,6 +133,7 @@ public class StuGui extends JFrame {
         });
 
         //jp1修改个人信息面板实现
+
         try {
             String URL = "jdbc:sqlserver://localhost:1433;databaseName=Final_Disign";
             String user = "u1";
@@ -150,83 +151,116 @@ public class StuGui extends JFrame {
             rs.next();
             rs1.next();
 
-            jp1.setLayout(new GridLayout(7,1,5,5));
-            JPanel jp11 = new JPanel();
-            JPanel jp12 = new JPanel();
-            JPanel jp13 = new JPanel();
-            JPanel jp14 = new JPanel();
-            JPanel jp15 = new JPanel();
-            JPanel jp16 = new JPanel();
-            JPanel jp17 = new JPanel();
-            JTextField jt11 = new JTextField(10);
-            jt11.setText(rs1.getString(1));
+            jp1.setLayout(new GridBagLayout());
+            GridBagConstraints c = new GridBagConstraints();
+            Insets insets = new Insets(10, 0, 10, 0);
+
+            JLabel jl11 = new JLabel("账号：");
+            c.gridy = 0;
+            c.gridx = 1;
+            c.insets = insets;
+            jp1.add(jl11,c);
+            JLabel jl12 = new JLabel("姓名：");
+            c.gridy = 1;
+            c.gridx = 1;
+            jp1.add(jl12,c);
+            JLabel jl13 = new JLabel("性别：");
+            c.gridy = 2;
+            c.gridx = 1;
+            jp1.add(jl13,c);
+            JLabel jl14 = new JLabel("年龄：");
+            c.gridy = 3;
+            c.gridx = 1;
+            jp1.add(jl14,c);
+            JLabel jl15 = new JLabel("班级：");
+            c.gridy = 4;
+            c.gridx = 1;
+            jp1.add(jl15,c);
+            JLabel jl16 = new JLabel("密码：");
+            c.gridy = 5;
+            c.gridx = 1;
+            jp1.add(jl16,c);
+            JLabel jl17 = new JLabel("确认密码：");
+            c.gridy = 6;
+            c.gridx = 1;
+            jp1.add(jl17,c);
+
+            JLabel jl111 = new JLabel();
+            jl111.setText(rs1.getString(1));
+            c.gridy = 0;
+            c.gridx = 2;
+            c.fill = GridBagConstraints.NONE; // 不填充单元格
+            c.anchor = GridBagConstraints.LINE_START; // 左对齐
+            jp1.add(jl111,c);
             JTextField jt12 = new JTextField(10);
             jt12.setText(rs1.getString(2));
-            JTextField jt13 = new JTextField(10);
-            jt13.setText(rs1.getString(3));
+            c.gridy = 1;
+            c.gridx = 2;
+            jp1.add(jt12,c);
+            JComboBox<String> jc13 = new JComboBox<String>();
+            jc13.addItem("男");
+            jc13.addItem("女");
+            jc13.setSelectedItem(rs1.getString(3));
+            c.gridy = 2;
+            c.gridx = 2;
+            jp1.add(jc13,c);
             JTextField jt14 = new JTextField(10);
             jt14.setText(rs1.getString(4));
+            c.gridy = 3;
+            c.gridx = 2;
+            jp1.add(jt14,c);
             JTextField jt15 = new JTextField(10);
             jt15.setText(rs1.getString(5));
-            JTextField jt16 = new JTextField(10);
-            jt16.setText(rs.getString(2));
-            JLabel jl11 = new JLabel("账号：");
-            JLabel jl12 = new JLabel("姓名：");
-            JLabel jl13 = new JLabel("性别：");
-            JLabel jl14 = new JLabel("年龄：");
-            JLabel jl15 = new JLabel("班级：");
-            JLabel jl16 = new JLabel("密码：");
+            c.gridy = 4;
+            c.gridx = 2;
+            jp1.add(jt15,c);
+            JPasswordField jpw16 = new JPasswordField(10);
+            jpw16.setText(rs.getString(2));
+            c.gridy = 5;
+            c.gridx = 2;
+            jp1.add(jpw16,c);
+            JPasswordField jpw17 = new JPasswordField(10);
+            jpw17.setText(rs.getString(2));
+            c.gridy = 6;
+            c.gridx = 2;
+            jp1.add(jpw17,c);
+
             JButton jb11 = new JButton("提交");
+            c.gridy = 7;
+            c.gridx = 2;
+            jp1.add(jb11,c);
+
             jb11.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
+                        comparePw(jpw16.getText(),jpw17.getText());
                         Connection dbConn1 = DriverManager.getConnection(URL, user, password);
-                        String strSQL1 = "UPDATE login SET id = ?,pw = ? WHERE id = ?";
-                        String strSQL2 = "UPDATE student SET sno = ?,sname = ?,ssex = ?, sage = ?,class = ? WHERE id = ?";
+                        String strSQL1 = "UPDATE login SET pw = ? WHERE id = ?";
+                        String strSQL2 = "UPDATE student SET sname = ?,ssex = ?, sage = ?,class = ? WHERE sno = ?";
                         PreparedStatement st1 = dbConn1.prepareStatement(strSQL1);
                         PreparedStatement st2 = dbConn1.prepareStatement(strSQL2);
-                        st1.setString(1,jt11.getText());
-                        st1.setString(2,jt16.getText());
-                        st1.setString(3,id);
+                        st1.setString(1,jpw16.getText());
+                        st1.setString(2,id);
                         st1.executeUpdate();
-                        st2.setString(1,jt11.getText());
-                        st2.setString(2,jt12.getText());
-                        st2.setString(3,jt13.getText());
-                        st2.setString(4,jt14.getText());
-                        st2.setString(5,jt15.getText());
+                        st2.setString(1,jt12.getText());
+                        st2.setObject(2,jc13.getSelectedItem());
+                        st2.setString(3,jt14.getText());
+                        st2.setString(4,jt15.getText());
+                        st2.setString(5,id);
                         st2.executeUpdate();
                         JOptionPane.showMessageDialog(StuGui.this, "提交成功");
                         dbConn.close();
 
-                    } catch (Exception ee) {
+                    }catch(NotSheSame ee) {
+                        JOptionPane.showMessageDialog(StuGui.this, "两次输入的密码不一致");
+                    }catch (Exception ee) {
                         ee.printStackTrace();
                         JOptionPane.showMessageDialog(StuGui.this, "数据不合法");
                     }
                 }
             });
 
-            jp11.add(jl11);
-            jp11.add(jt11);
-            jp12.add(jl12);
-            jp12.add(jt12);
-            jp13.add(jl13);
-            jp13.add(jt13);
-            jp14.add(jl14);
-            jp14.add(jt14);
-            jp15.add(jl15);
-            jp15.add(jt15);
-            jp16.add(jl16);
-            jp16.add(jt16);
-            jp17.add(jb11);
-
-            jp1.add(jp11);
-            jp1.add(jp12);
-            jp1.add(jp13);
-            jp1.add(jp14);
-            jp1.add(jp15);
-            jp1.add(jp16);
-            jp1.add(jp17);
 
             dbConn.close();
 
@@ -240,7 +274,7 @@ public class StuGui extends JFrame {
 
         jp31.add(jb32);
         String[][] datas3 = {};
-        String[] titles3 = { "课程号", "课程名" ,"成绩","获得学分"};
+        String[] titles3 = { "课程号", "课程名" ,"成绩"};
         DefaultTableModel myModel3 = new DefaultTableModel(datas3, titles3);// myModel存放表格的数据
         JTable table3 = new JTable(myModel3);// 表格对象table的数据来源是myModel对象
         table3.setRowHeight(20);// 行高
@@ -258,8 +292,8 @@ public class StuGui extends JFrame {
             String password = "123";
             Connection dbConn = DriverManager.getConnection(URL, user, password);
             System.out.println("连接数据库成功");
-            String strSQL = "select course.cno,course.cname,sc.grade,sc.getcredit\n" +
-                    "from dbo.sc left join course on sc.cno = course.cno\n" +
+            String strSQL = "select course.cno,course.cname,grade.grade\n" +
+                    "from dbo.sc left join course on sc.cno = course.cno left join grade on (sc.sno = grade.sno and sc.cno = grade.cno) \n" +
                     "where sc.sno = ?";
             PreparedStatement st = dbConn.prepareStatement(strSQL);
             st.setString(1,id);
@@ -275,7 +309,6 @@ public class StuGui extends JFrame {
                 ve.addElement(rs.getString(1));
                 ve.addElement(rs.getString(2));
                 ve.addElement(rs.getString(3));
-                ve.addElement(rs.getString(4));
                 myModel3.addRow(ve); // 添加一行到模型结尾
             }
             dbConn.close();
@@ -298,8 +331,8 @@ public class StuGui extends JFrame {
                 String password = "123";
                 Connection dbConn = DriverManager.getConnection(URL, user, password);
                 System.out.println("连接数据库成功");
-                String strSQL = "select course.cno,course.cname,sc.grade,sc.getcredit" +
-                        "from dbo.sc left join course on sc.cno = course.cno" +
+                String strSQL = "select course.cno,course.cname,sc.grade,sc.getcredit\n" +
+                        "from dbo.sc left join course on sc.cno = course.cno\n" +
                         "where sc.sno = ?";
                 PreparedStatement st = dbConn.prepareStatement(strSQL);
                 st.setString(1,id);
@@ -344,5 +377,10 @@ public class StuGui extends JFrame {
         setSize(600, 400);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE); // Use DISPOSE_ON_CLOSE to avoid memory leaks
         setLocationRelativeTo(null); // Center the window
+    }
+    class NotSheSame extends Exception{
+    }
+    public void comparePw(String pw1, String pw2 ) throws NotSheSame{
+        if(!pw1.equals(pw2))throw new NotSheSame();
     }
 }

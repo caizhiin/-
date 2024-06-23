@@ -28,6 +28,21 @@ public class Login extends JFrame{
         jp2.add(jl2);
         jp2.add(password);
         jp2.setLayout(new FlowLayout());
+        JPanel jp3 = new JPanel();
+        JLabel jl3 = new JLabel("身   份:");
+        JComboBox<String> jc3 = new JComboBox<String>();
+        jc3.addItem("管理员");
+        jc3.addItem("学生");
+        jc3.addItem("教师");
+        JButton c=new JButton("");
+        c.setContentAreaFilled(false);
+        c.setBorderPainted(false);
+        c.setEnabled(false);
+
+        jp3.add(jl3);
+        jp3.add(jc3);
+        jp3.add(c);
+        jp3.setLayout(new FlowLayout());
 
         JButton login = new JButton("登录");
         JButton cancel = new JButton("取消");
@@ -45,7 +60,7 @@ public class Login extends JFrame{
                          Statement statement = connection.createStatement();
                          ResultSet resultSet = statement.executeQuery("SELECT * FROM login")) {
                          Boolean flag = true;
-                        while (resultSet.next()&& flag ) {
+                        while (resultSet.next()&& flag ){
                             // 假设表有两列：id和name
                             String id = resultSet.getString("id");
                             String pas = resultSet.getString("pw");
@@ -53,14 +68,16 @@ public class Login extends JFrame{
                                 followid = id;
                                 flag = false;
                                 int sf = resultSet.getInt("sf");
+                                int selectedsf = jc3.getSelectedIndex();
+                                decideSf(sf,selectedsf);
                                 switch (sf){
-                                    case 1: AdminGui adminFrame = new AdminGui(Login.this.getId());
+                                    case 0: AdminGui adminFrame = new AdminGui(Login.this.getId());
                                         adminFrame.setVisible(true);  dispose();break;
 
-                                    case 2: StuGui stuFrame = new StuGui(Login.this.getId());
+                                    case 1: StuGui stuFrame = new StuGui(Login.this.getId());
                                         stuFrame.setVisible(true);  dispose();break;
 
-                                    case 3:
+                                    case 2:
                                         TeaGui teaFrame = new TeaGui(Login.this.getId());
                                         teaFrame.setVisible(true); dispose();break;
 
@@ -69,8 +86,10 @@ public class Login extends JFrame{
 
                         }
                         if(flag){
-                            JOptionPane.showMessageDialog(Login.this, "账号或密码错误", "Message", JOptionPane.INFORMATION_MESSAGE);
+                            JOptionPane.showMessageDialog(Login.this, "账号或密码错误", "错误", JOptionPane.INFORMATION_MESSAGE);
                         }
+                    }catch (SfNotTheSame f){
+                        JOptionPane.showMessageDialog(Login.this, "你的身份有误，检测到你的身份为："+f.getSf(), "身份选择错误", JOptionPane.INFORMATION_MESSAGE);
                     } catch (SQLException f) {
                         f.printStackTrace();
                     }
@@ -78,15 +97,17 @@ public class Login extends JFrame{
             }
         });
         cancel.addActionListener(e -> dispose());
-        JPanel jp3 = new JPanel();
-        jp3.add(login);
-        jp3.add(cancel);
+        JPanel jp4 = new JPanel();
+        jp4.add(login);
+        jp4.add(cancel);
 
         this.setLayout(new FlowLayout());
         this.add(jp1);
         this.add(jp2);
         this.add(jp3);
-        this.setSize(300, 160);
+        this.add(jp4);
+
+        this.setSize(300, 200);
         this.setVisible(true);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLocationRelativeTo(null);
@@ -94,4 +115,26 @@ public class Login extends JFrame{
     public String getId(){
         return followid;
     }
+
+    public void decideSf(int sf, int SelectedSf)throws SfNotTheSame {
+        if(sf != SelectedSf){
+            if(sf == 0)
+                throw new SfNotTheSame("管理员");
+            else if (sf == 1) {
+                throw new SfNotTheSame("学生");
+            }else{
+                throw new SfNotTheSame("教师");
+            }
+        }
+    }
 }
+    class SfNotTheSame extends Exception{
+    private String sf;
+    SfNotTheSame(String sf){
+     this.sf = sf;
+    }
+    public String getSf() {
+        return sf;
+    }
+}
+
