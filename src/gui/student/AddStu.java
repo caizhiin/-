@@ -11,7 +11,7 @@ import java.sql.PreparedStatement;
 public class AddStu extends JFrame{
     private String sno = null;
     private String sname = null;
-    private String ssex = null;
+    private Object ssex = null;
     private String clas = null;
     private int sage = 0;
 
@@ -20,55 +20,75 @@ public class AddStu extends JFrame{
     }
 
     public AddStu() {
+        this.setLayout(new GridBagLayout());
+        GridBagConstraints c = new GridBagConstraints();
+        Insets insets = new Insets(10, 0, 10, 0);
+
+
+        JLabel jl1 = new JLabel("学号:");
+        c.gridy = 0;
+        c.gridx = 1;
+        c.insets = insets;
+        this.add(jl1,c);
+        JLabel jl2 = new JLabel("姓名:");
+        c.gridy = 1;
+        c.gridx = 1;
+        c.insets = insets;
+        this.add(jl2,c);
+        JLabel jl3 = new JLabel("性别:");
+        c.gridy = 2;
+        c.gridx = 1;
+        c.insets = insets;
+        this.add(jl3,c);
+        JLabel jl4 = new JLabel("年龄:");
+        c.gridy = 3;
+        c.gridx = 1;
+        c.insets = insets;
+        this.add(jl4,c);
+        JLabel jl5 = new JLabel("班级:");
+        c.gridy = 4;
+        c.gridx = 1;
+        c.insets = insets;
+        this.add(jl5,c);
 
         JTextField jt1 = new JTextField(10);
+        c.gridy = 0;
+        c.gridx = 2;
+        c.fill = GridBagConstraints.NONE; // 不填充单元格
+        c.anchor = GridBagConstraints.LINE_START; // 左对齐
+        this.add(jt1,c);
         JTextField jt2 = new JTextField(10);
-        JTextField jt3 = new JTextField(10);
+        c.gridy = 1;
+        c.gridx = 2;
+        this.add(jt2,c);
+        JComboBox<String> jc3 = new JComboBox<String>();
+        jc3.addItem("男");
+        jc3.addItem("女");
+        c.gridy = 2;
+        c.gridx = 2;
+        this.add(jc3,c);
         JTextField jt4 = new JTextField(10);
+        c.gridy = 3;
+        c.gridx = 2;
+        this.add(jt4,c);
         JTextField jt5 = new JTextField(10);
-        JLabel jl1 = new JLabel("学号");
-        JLabel jl2 = new JLabel("姓名");
-        JLabel jl3 = new JLabel("性别");
-        JLabel jl4 = new JLabel("年龄");
-        JLabel jl5 = new JLabel("班级");
+        c.gridy = 4;
+        c.gridx = 2;
+        this.add(jt5,c);
 
         JButton jb1 = new JButton("提交");
+        c.gridy = 5;
+        c.gridx = 1;
+        this.add(jb1,c);
         JButton jb2 = new JButton("取消");
+        c.gridy = 5;
+        c.gridx = 2;
+        c.anchor = GridBagConstraints.CENTER;
+        this.add(jb2,c);
 
-        JPanel jp2 = new JPanel();
-        JPanel jp1 = new JPanel();
-        JPanel jp4 = new JPanel();
-        JPanel jp5 = new JPanel();
-        JPanel jp6 = new JPanel();
-        JPanel jp3 = new JPanel();
-        jp1.add(jl1);
-        jp1.add(jt1);
-        jp2.add(jl2);
-        jp2.add(jt2);
-        jp3.add(jb1);
-        jp3.add(jb2);
-        jp4.add(jl3);
-        jp4.add(jt3);
-        jp5.add(jl4);
-        jp5.add(jt4);
-        jp6.add(jl5);
-        jp6.add(jt5);
-        jp1.setLayout(new FlowLayout());
-        jp2.setLayout(new FlowLayout());
-        jp3.setLayout(new FlowLayout());
-        jp4.setLayout(new FlowLayout());
-        jp5.setLayout(new FlowLayout());
-        jp6.setLayout(new FlowLayout());
 
-        this.add(jp1);
-        this.add(jp2);
-        this.add(jp4);
-        this.add(jp5);
-        this.add(jp6);
 
-        this.add(jp3);
         this.setSize(300,300);
-        this.setLayout(new FlowLayout());
         this.setAlwaysOnTop(true);
         setVisible(true);
         setTitle("添加学生");
@@ -86,8 +106,9 @@ public class AddStu extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 try {
                     sno = jt1.getText();
+                    checkSno(sno);
                     sname = jt2.getText();
-                    ssex = jt3.getText();
+                    ssex = jc3.getSelectedItem();
                     sage = Integer.parseInt(jt4.getText());
                     clas = jt5.getText();
                     String URL = "jdbc:sqlserver://localhost:1433;databaseName=Final_Disign";
@@ -98,7 +119,7 @@ public class AddStu extends JFrame{
                     PreparedStatement st = dbConn.prepareStatement(strSQL);
                     st.setString(1, sno);
                     st.setString(2, sname);
-                    st.setString(3, ssex);
+                    st.setObject(3, ssex);
                     st.setInt(4, sage);
                     st.setString(5, clas);
                     String strSQL1 = "INSERT INTO login (id, pw ,sf) VALUES (? ,? ,? )";
@@ -114,13 +135,19 @@ public class AddStu extends JFrame{
                     }
                     dbConn.close();
 
-                } catch (Exception ee) {
+                } catch (CheckWrong ee) {
+                    ee.printStackTrace();
+                    JOptionPane.showMessageDialog(AddStu.this, "添加失败，学号应为十位数字");
+                }catch (Exception ee) {
                     ee.printStackTrace();
                     JOptionPane.showMessageDialog(AddStu.this, "添加失败，数据不符合要求");
                 }
             }
         });
-
-
+    }
+    class CheckWrong extends Exception{
+    }
+    public void checkSno(String sno ) throws CheckWrong {
+        if(sno.length()!=10)throw new CheckWrong();
     }
 }

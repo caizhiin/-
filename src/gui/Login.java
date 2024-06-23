@@ -127,14 +127,15 @@ public class Login extends JFrame{
             }
         }
     }
-}
     class SfNotTheSame extends Exception{
-    private String sf;
-    SfNotTheSame(String sf){
-     this.sf = sf;
-    }
-    public String getSf() {
-        return sf;
+        private String sf;
+        SfNotTheSame(String sf){
+            this.sf = sf;
+        }
+        public String getSf() {
+            return sf;
+        }
     }
 }
+
 

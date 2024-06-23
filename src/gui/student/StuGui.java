@@ -269,7 +269,7 @@ public class StuGui extends JFrame {
             System.out.print("连接失败");
         }
 
-        //jp3学生管理面板实现
+        //jp3成绩查询面板实现
         JButton jb32 = new JButton("刷新");
 
         jp31.add(jb32);
@@ -331,8 +331,8 @@ public class StuGui extends JFrame {
                 String password = "123";
                 Connection dbConn = DriverManager.getConnection(URL, user, password);
                 System.out.println("连接数据库成功");
-                String strSQL = "select course.cno,course.cname,sc.grade,sc.getcredit\n" +
-                        "from dbo.sc left join course on sc.cno = course.cno\n" +
+                String strSQL = "select course.cno,course.cname,grade.grade\n" +
+                        "from dbo.sc left join course on sc.cno = course.cno left join grade on (sc.sno = grade.sno and sc.cno = grade.cno) \n" +
                         "where sc.sno = ?";
                 PreparedStatement st = dbConn.prepareStatement(strSQL);
                 st.setString(1,id);
@@ -348,7 +348,6 @@ public class StuGui extends JFrame {
                     ve.addElement(rs.getString(1));
                     ve.addElement(rs.getString(2));
                     ve.addElement(rs.getString(3));
-                    ve.addElement(rs.getString(4));
                     myModel3.addRow(ve); // 添加一行到模型结尾
                 }
                 dbConn.close();
